@@ -31,17 +31,18 @@ echo "$user_credentials" > ~/.git-credentials && git config --global credential.
 tg_sendText "Syncing rom"
 mkdir -p /tmp/rom
 cd /tmp/rom
-repo init --no-repo-verify --depth=1 -u https://github.com/LineageOS/android.git -b lineage-17.1 -g default,-device,-mips,-darwin,-notdefault
+repo init --no-repo-verify --depth=1 -u https://github.com/Miku-UI/manifesto -b snowland -g default,-device,-mips,-darwin,-notdefault
 repo sync -c --force-sync --optimized-fetch --no-tags --no-clone-bundle --prune -j6 || repo sync -c --force-sync --optimized-fetch --no-tags --no-clone-bundle --prune -j8
 
 tg_sendText "Downloading trees"
-git clone https://github.com/MizuNotCool/android_device_samsung_a10s device/samsung/a10s
-git clone https://github.com/MizuNotCool/suzu_vendor_samsung_a10s vendor/samsung/a10s
+git clone https://github.com/Reydesu53/android_device_xiaomi_santoni -b MikuUI-12 device/xiaomi/santoni
+git clone https://github.com/Reydesu53/android_vendor_device_santoni vendor/xiaomi/santoni
+git clone https://github.com/SilverShades02/platform_kernel_xiaomi_santoni -b 4.9 kernel/xiaomi/santoni
 
 tg_sendText "Lunching"
 # Normal build steps
 . build/envsetup.sh
-lunch lineage_a10s-userdebug
+lunch miku_santoni-userdebug
 export SELINUX_IGNORE_NEVERALLOWS=true
 export ALLOW_MISSING_DEPENDENCIES=true
 export RELAX_USES_LIBRARY_CHECK=true
@@ -63,12 +64,12 @@ ccache -z
 
 tg_sendText "Starting Compilation.."
 
-make clean && make bacon -j8 | tee build.txt
+make clean && make diva -j8 | tee build.txt
 
 tg_sendText "Build completed! Uploading rom"
-curl bashupload.com -T ./out/target/product/a10s/*.zip | tee download-link.txt
+curl bashupload.com -T ./out/target/product/santoni/*.zip | tee download-link.txt
 
-(ccache -s && echo " " && free -h && echo " " && df -h && echo " " && ls -a out/target/product/a10s/) | tee final_monitor.txt
+(ccache -s && echo " " && free -h && echo " " && df -h && echo " " && ls -a out/target/product/santoni/) | tee final_monitor.txt
 tg_sendFile "final_monitor.txt"
 tg_sendFile "build.txt"
 tg_sendFile "download-link.txt"
@@ -83,5 +84,5 @@ DIFF=$(($BUILD_END - $BUILD_START));
 
 
 tg_sendText "Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
-cd out/target/product/a10s
+cd out/target/product/santoni
 tg_sendFile *UNOFFICIAL*.zip
